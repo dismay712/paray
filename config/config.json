@@ -1,5 +1,5 @@
 {
-    "log": {"loglevel": "info"},
+    "log": {"loglevel": "none"},
     "routing": {
         "domainStrategy": "IPIfNonMatch",
         "rules": [
@@ -16,12 +16,7 @@
             "port": 3000,
             "protocol": "vless",
             "settings": {
-                "clients": [
-                    {
-                        "id": "--uuid--",
-                        "flow": ""
-                    }
-                ],
+                "clients": [{"id": "--uuid--", "flow": ""}],
                 "decryption": "none"
             },
             "streamSettings": {
