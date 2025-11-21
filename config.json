@@ -10,11 +10,23 @@
     },
     "inbounds": [
         {
-            "listen": "0.0.0.0",
             "port": 3000,
             "protocol": "vless",
             "settings": {
-                "clients": [{"id": "--uuid--", "flow": ""}],
+                "clients": [{"id": "--uuid--", "flow": "xtls-rprx-vision"}],
+                "decryption": "none",
+                "fallbacks": [{"path": "/fetch", "dest": 3001}]
+            },
+            "streamSettings": {
+                "network": "tcp"
+            }
+        },
+        {
+            "listen": "127.0.0.1",
+            "port": 3001,
+            "protocol": "vless",
+            "settings": {
+                "clients": [{"id": "--uuid--", "level": 0}],
                 "decryption": "none"
             },
             "streamSettings": {
