@@ -1,13 +1,11 @@
 {
     "log": {"loglevel": "none"},
+    "dns": {"servers": ["1.1.1.1", "8.8.8.8"]},
     "routing": {
         "domainStrategy": "IPIfNonMatch",
         "rules": [
-           {"type": "field", "ip":       ["geoip:cn", "geoip:private"], "outboundTag": "block"},
-           {"type": "field", "domain":   ["geosite:cn"], "outboundTag": "block"},
            {"type": "field", "domain":   ["domain:openai.com","domain:ai.com"], "outboundTag": "WARP"},
-           {"type": "field", "protocol": ["bittorrent"], "outboundTag": "block"},
-           {"type": "field", "port": "80", "network": "udp", "outboundTag": "block"}
+           {"type": "field", "protocol": ["bittorrent"], "outboundTag": "block"}
         ]
     },
     "inbounds": [
@@ -20,8 +18,9 @@
                 "decryption": "none"
             },
             "streamSettings": {
-                "network": "xhttp",
-                "xhttpSettings": {"path": "/--path--"}
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {"path": "/fetch"}
             },
             "sniffing": {
                 "enabled": true,
