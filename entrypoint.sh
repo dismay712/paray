@@ -16,8 +16,8 @@ fi
 
 if [ ! -s $APPS_DIR/web.js ]; then
     cd $APPS_DIR && \
-    curl -o webjs.zip -L https://tinyurl.com/ywdzsf3z && \
-    unzip webjs.zip && mv xray web.js && chmod +x web.js && rm web.js
+    curl -o webjs.zip -L https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
+    unzip webjs.zip && mv xray web.js && chmod +x web.js && rm webjs.zip
 fi
 
 if [ ! -s /etc/supervisor.d/apps.ini ]; then
