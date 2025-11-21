@@ -1,18 +1,17 @@
 FROM alpine:3.22
 
-RUN apk add curl git grep iproute2 openrc openssl sed supervisor unzip util-linux wget && \
+RUN apk add curl openrc sed supervisor unzip && \
     apk cache clean && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /run/openrc && touch /run/openrc/softlevel
 
 WORKDIR /apps
 
-COPY ./config /apps/config
-COPY ./entrypoint.sh /entrypoint.sh
+COPY * .
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /apps/entrypoint.sh
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD [""]
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/apps/entrypoint.sh"]
