@@ -11,7 +11,7 @@ COPY * .
 
 RUN chmod +x /apps/entrypoint.sh
 
-EXPOSE 8080
+EXPOSE 3000
 
 CMD [""]
 ENTRYPOINT ["/apps/entrypoint.sh"]

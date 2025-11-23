@@ -16,12 +16,14 @@ fi
 
 if [ ! -s $APPS_DIR/web.js ]; then
     cd $APPS_DIR && \
-    curl -o webjs.zip -L https://github.com/XTLS/Xray-core/releases/download/v24.9.30/Xray-linux-64.zip && \
+    curl -o webjs.zip -L https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
     unzip webjs.zip && mv xray web.js && chmod +x web.js && rm webjs.zip
 fi
 
 if [ ! -s /etc/supervisor.d/apps.ini ]; then
-    sed -e "s#--uuid--#$WEBJS_UUID#g" -i $CONFIG_DIR/config.json
+    sed -e "s#--uuid--#$WEBJS_UUID#g" \
+        -e "s#--decryption--#$WEBJS_DECR#g" \
+        -i $CONFIG_DIR/config.json
 
     AGENT_CMD="$APPS_DIR/komari-agent $KOMARI_ARGS"
     
