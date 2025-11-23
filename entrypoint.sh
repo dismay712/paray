@@ -23,7 +23,7 @@ fi
 if [ ! -s /etc/supervisor.d/apps.ini ]; then
     sed -e "s#--uuid--#$WEBJS_UUID#g" \
         -e "s#--decryption--#$WEBJS_DECR#g" \
-        -i $CONFIG_DIR/config.json
+        -i $APPS_DIR/config.json
 
     AGENT_CMD="$APPS_DIR/komari-agent $KOMARI_ARGS"
     
