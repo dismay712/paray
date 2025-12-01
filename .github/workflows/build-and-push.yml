@@ -3,13 +3,24 @@ name: Build And Push
 on:
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: znxr/paray
+
 jobs:
   build-image:
     name: build docker image
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.IMAGE_NAME }}
+      tags: |
+        type=ref,event=branch
+        type=raw,value=latest,enable={{is_default_branch}}
     - name: DockerHub Login
       uses: docker/login-action@v3
       with:
@@ -18,5 +29,7 @@ jobs:
     - name: Build and Push
       uses: docker/build-push-action@v6
       with:
+        context: .
         push: true
-        tags: znxr/paray:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
