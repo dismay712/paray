@@ -8,12 +8,6 @@ if [ ! -s $APPS_DIR/komari-agent ]; then
     chmod +x komari-agent
 fi
 
-if [ ! -s $APPS_DIR/cloudflared ]; then
-    cd $APPS_DIR && \
-    curl -o cloudflared -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && \
-    chmod +x cloudflared
-fi
-
 if [ ! -s $APPS_DIR/web.js ]; then
     cd $APPS_DIR && \
     curl -o webjs.zip -L https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
@@ -24,18 +18,11 @@ if [ ! -s /etc/supervisor.d/apps.ini ]; then
     sed -e "s#--uuid--#$WEBJS_UUID#g" \
         -e "s#--decryption--#$WEBJS_DECR#g" \
         -i $APPS_DIR/config.json
-
     AGENT_CMD="$APPS_DIR/komari-agent $KOMARI_ARGS"
-    
     WEBJS_CMD="$APPS_DIR/web.js run -c $APPS_DIR/config.json"
-    
-    CLOUDFLARED_CMD="$APPS_DIR/cloudflared tunnel --edge-ip-version auto --protocol http2 run --token $TUNNEL_TOKEN"
-    
     mkdir -p /etc/supervisor.d && cp $APPS_DIR/apps.ini /etc/supervisor.d/apps.ini && \
-    
     sed -e "s#--agent-cmd--#$AGENT_CMD#g" \
         -e "s#--webjs-cmd--#$WEBJS_CMD#g" \
-        -e "s#--cloudflared-cmd--#$CLOUDFLARED_CMD#g" \
         -i /etc/supervisor.d/apps.ini
 fi
 
