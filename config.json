@@ -1,19 +1,19 @@
 {
     "log": {"loglevel": "none"},
-    "dns": {"servers": ["1.1.1.1", "8.8.8.8"]},
+    "dns": {"servers": ["https+local://1.1.1.1/dns-query", "https+local://8.8.8.8/dns-query"]},
     "routing": {
         "domainStrategy": "IPIfNonMatch",
         "rules": [
             {"type": "field", "ip":       ["geoip:cn", "geoip:private"], "outboundTag": "block"},
             {"type": "field", "domain":   ["geosite:cn"], "outboundTag": "block"},
-            {"type": "field", "domain":   ["domain:openai.com","domain:ai.com"], "outboundTag": "WARP"},
+            {"type": "field", "domain":   ["geosite:openai", "geosite:netflix", "geosite:disney"], "outboundTag": "WARP"},
             {"type": "field", "protocol": ["bittorrent"], "outboundTag": "block"}
         ]
     },
     "inbounds": [
         {
             "listen": "0.0.0.0",
-            "port": 3000,
+            "port": 8080,
             "protocol": "vless",
             "settings": {
                 "clients": [{"id": "--uuid--", "flow": ""}],
@@ -22,9 +22,62 @@
             "streamSettings": {
                 "network": "xhttp",
                 "security": "none",
-                "xhttpSettings": {"path": "/04CTvNMAVKHV"}
+                "xhttpSettings": {"path": "/fetch-xhttp"}
             },
             "sniffing": {
+                "enabled": true,
+                "destOverride": ["http", "tls", "quic"],
+                "metadataOnly": false
+            }
+        },
+        {
+            "port": 8081,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {"id": "--uuid--", "flow": ""}
+                ],
+                "decryption": "--decryption--"
+            },
+            "streamSettings": {
+                "network": "ws",
+                "security": "none",
+                "wsSettings": {"path": "/fetch-ws"}
+            },
+            "sniffing":{
+                "enabled": true,
+                "destOverride": ["http", "tls", "quic"],
+                "metadataOnly": false
+            }
+        },
+        {
+            "port": 8082,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {"id": "--uuid--", "flow": ""}
+                ],
+                "decryption": "--decryption--"
+            },
+            "streamSettings": {
+                "network": "grpc",
+                "security": "tls",
+                "tlsSettings": {
+                    "certificates": [
+                        {
+                            "certificate": [
+
+                            ],
+                            "key": [
+                                
+                            ]
+                        }
+                    ],
+                    "alpn": ["h2"]
+                },
+                "grpcSettings": {"serviceName": "fetch-grpc", "multiMode": true}
+            },
+            "sniffing":{
                 "enabled": true,
                 "destOverride": ["http", "tls", "quic"],
                 "metadataOnly": false
@@ -38,12 +91,12 @@
             "tag": "WARP",
             "protocol": "wireguard",
             "settings": {
-                "secretKey": "YFYOAdbw1bKTHlNNi+aEjBM3BO7unuFC5rOkMRAz9XY=",
-                "address": ["172.16.0.2/32", "2606:4700:110:8a36:df92:102a:9602:fa18/128"],
+                "secretKey": "AFXoXc+3MANDKBkFwYOJwytC+LoFnVu+SBBjg/WL4Ww=",
+                "address": ["172.16.0.2/32", "2606:4700:110:8b0b:bc62:d926:f727:2643/128"],
                 "peers": [{
                     "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
                     "allowedIPs": ["0.0.0.0/0", "::/0"],
-                    "endpoint": "162.159.193.10:2408"
+                    "endpoint": "engage.cloudflareclient.com:2408"
                 }],
                 "reserved": [78, 135, 76],
                 "mtu": 1280
