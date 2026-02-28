@@ -66,10 +66,20 @@
                     "certificates": [
                         {
                             "certificate": [
-
+                                "-----BEGIN CERTIFICATE-----",
+                                "MIIBRjCB+aADAgECAhRbk2AJO3YvI9EzNcasnDbbj8/0FDAFBgMrZXAwGTEXMBUG",
+                                "A1UEAwwOZ3JwYy52bGVzcy5jb20wHhcNMjYwMjI4MDc1NzE4WhcNMzYwMjI2MDc1",
+                                "NzE4WjAZMRcwFQYDVQQDDA5ncnBjLnZsZXNzLmNvbTAqMAUGAytlcAMhAL2X7Xlh",
+                                "MIWKz4jy8p/vphJzyJ/MeBG9D2gx503L6qkho1MwUTAdBgNVHQ4EFgQUrHyeqkgH",
+                                "iq8W4gBISs1epHAa2k4wHwYDVR0jBBgwFoAUrHyeqkgHiq8W4gBISs1epHAa2k4w",
+                                "DwYDVR0TAQH/BAUwAwEB/zAFBgMrZXADQQB/hUetVFh1n6wtw+BRQ3s+lpB6x8rS",
+                                "ynEcBi+/fLxULtc09Pakg3ai0bR2CyPSkXnrf7o8BqbBAbOFiexRUn4G",
+                                "-----END CERTIFICATE-----"
                             ],
                             "key": [
-                                
+                                "-----BEGIN PRIVATE KEY-----",
+                                "MC4CAQAwBQYDK2VwBCIEICBQPzW/CROn8j7KrPUJU5r2/5GBSY7BhSbfMnG2tF30",
+                                "-----END PRIVATE KEY-----"
                             ]
                         }
                     ],
