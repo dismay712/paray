@@ -10,7 +10,8 @@ COPY versions.lock.json fetch.sh ./
 
 FROM downloads AS core
 ARG TARGETARCH
-RUN sh fetch.sh xray "$TARGETARCH" /tmp/xray.zip \
+RUN mkdir -p /out \
+    && sh fetch.sh xray "$TARGETARCH" /tmp/xray.zip \
     && unzip -p /tmp/xray.zip xray > /out/xray \
     && unzip -p /tmp/xray.zip LICENSE > /out/xray-LICENSE \
     && rm /tmp/xray.zip \
