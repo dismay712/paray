@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eu
+
+/usr/local/libexec/paray-config
+
+rm -rf /run/service
+mkdir -p /run/service
+
+cp -a /etc/services.d/. /run/service/
+
+exec s6-svscan /run/service

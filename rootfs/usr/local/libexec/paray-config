@@ -1,4 +1,4 @@
-#!/command/with-contenv sh
+#!/bin/sh
 
 set -eu
 umask 027

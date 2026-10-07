@@ -1,10 +1,16 @@
-#!/command/execlineb -P
-fdmove -c 2 1
-ifelse { /bin/test -s /run/paray/komari.json }
-{
-  cd /run/paray/home
-  s6-setuidgid paray
-  /usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin HOME=/run/paray/home
-  /usr/local/bin/komari-agent --config /run/paray/komari.json
-}
-s6-pause
+#!/bin/sh
+
+exec 2>&1
+
+if [ -s /run/paray/komari.json ]; then
+    cd /run/paray/home
+
+    exec s6-setuidgid paray \
+        env -i \
+        PATH=/usr/local/bin:/usr/bin:/bin \
+        HOME=/run/paray/home \
+        /usr/local/bin/komari-agent \
+        --config /run/paray/komari.json
+fi
+
+exec s6-pause

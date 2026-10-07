@@ -1,5 +1,11 @@
-#!/command/execlineb -P
-fdmove -c 2 1
-s6-setuidgid paray
-/usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin HOME=/run/paray/home XRAY_LOCATION_ASSET=/usr/local/share/xray
-/usr/local/bin/xray run -config /run/paray/config.json
+#!/bin/sh
+
+exec 2>&1
+
+exec s6-setuidgid paray \
+    env -i \
+    PATH=/usr/local/bin:/usr/bin:/bin \
+    HOME=/run/paray/home \
+    XRAY_LOCATION_ASSET=/usr/local/share/xray \
+    /usr/local/bin/xray run \
+    -config /run/paray/config.json

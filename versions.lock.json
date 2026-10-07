@@ -5,7 +5,6 @@
     "xray": "v26.9.30",
     "cloudflared": "2026.9.3",
     "komari": "1.5.11",
-    "s6": "v3.2.3.2",
     "geoip_commit": "aefa344f7b9108483b486a483af4004cda31e2f0"
   },
   "assets": {
@@ -43,20 +42,6 @@
       "arm64": {
         "url": "https://github.com/komari-monitor/komari-agent/releases/download/1.5.11/komari-agent-linux-arm64",
         "sha256": "ff8e33dc12ef2b5738fa291a58498bd15dcbf8ef51966ab65fd67679a0abc87d"
-      }
-    },
-    "s6": {
-      "amd64": {
-        "url": "https://github.com/just-containers/s6-overlay/releases/download/v3.2.3.2/s6-overlay-x86_64.tar.xz",
-        "sha256": "e6befcc96a437a3831386ecfc51808c5d3e939dc5fe3c02ae9284599e8aa2408"
-      },
-      "arm64": {
-        "url": "https://github.com/just-containers/s6-overlay/releases/download/v3.2.3.2/s6-overlay-aarch64.tar.xz",
-        "sha256": "b17f17a82e7a515c682a91edaf2ffdabb73f891981b6c1fd712115693a2f8b4c"
-      },
-      "noarch": {
-        "url": "https://github.com/just-containers/s6-overlay/releases/download/v3.2.3.2/s6-overlay-noarch.tar.xz",
-        "sha256": "5379750ed30a84bbd2e2dd74847ba6b5bd29cd0b2e3ea2ec58049b57eb2eda12"
       }
     }
   }

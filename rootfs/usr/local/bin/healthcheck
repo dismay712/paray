@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
-/command/s6-svwait -u -t 1000 /run/service/xray
+s6-svwait -u -t 1000 /run/service/xray
 awk '$4=="0A" && $2 ~ /:2128$/ {found=1} END {exit !found}' /proc/net/tcp*
 if [ -s /run/paray/tunnel-token ]; then
-    /command/s6-svwait -u -t 1000 /run/service/cloudflared
+    s6-svwait -u -t 1000 /run/service/cloudflared
     wget -q -T 2 -O /dev/null http://127.0.0.1:20000/ready
 fi
