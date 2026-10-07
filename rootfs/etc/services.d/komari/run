@@ -5,8 +5,7 @@ exec 2>&1
 if [ -s /run/paray/komari.json ]; then
     cd /run/paray/home
 
-    exec s6-setuidgid paray \
-        env -i \
+    exec env -i \
         PATH=/usr/local/bin:/usr/bin:/bin \
         HOME=/run/paray/home \
         /usr/local/bin/komari-agent \
