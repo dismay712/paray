@@ -1,0 +1,54 @@
+#!/command/with-contenv sh
+
+set -eu
+umask 027
+fail() { printf '[paray] %s\n' "$*" >&2; exit 1; }
+for name in WEBJS_UUID WEBJS_DECR TUNNEL_TOKEN KOMARI_ENDPOINT KOMARI_TOKEN; do
+    value=$(printenv "$name" || true)
+    file=$(printenv "${name}_FILE" || true)
+    if [ -n "$file" ]; then
+        [ -z "$value" ] || fail "$name and ${name}_FILE cannot both be set"
+        [ -r "$file" ] && [ -f "$file" ] || fail "${name}_FILE is not readable"
+        value=$(cat "$file")
+        export "$name=$value"
+    fi
+done
+: "${WEBJS_UUID:?WEBJS_UUID is required}"
+WEBJS_DECR=${WEBJS_DECR:-none}
+export WEBJS_DECR
+[ -z "${KOMARI_ARGS:-}${KOMARI_ARGS_JSON:-}" ] || fail "use KOMARI_ENDPOINT and KOMARI_TOKEN; edit the Komari JSON template for other options"
+
+mkdir -p /run/paray/home
+chmod 750 /run/paray
+chown 0:10001 /run/paray
+chown 10001:10001 /run/paray/home
+chmod 700 /run/paray/home
+tmp=$(mktemp -d /run/paray/.init.XXXXXX)
+trap 'rm -rf "$tmp"' EXIT HUP INT TERM
+
+jq '
+  .inbounds[0].settings.clients[0].id = env.WEBJS_UUID
+  | .inbounds[0].settings.decryption = env.WEBJS_DECR
+' /etc/paray/config.json > "$tmp/config.json"
+if ! timeout 20 /usr/local/bin/xray run -test -config "$tmp/config.json" > "$tmp/check.log" 2>&1; then
+    fail "Xray configuration is invalid; check WEBJS_UUID, WEBJS_DECR and the template"
+fi
+
+: > "$tmp/tunnel-token"
+case "${TUNNEL_ENABLED:-true}" in
+    true|1) printf '%s' "${TUNNEL_TOKEN:-}" > "$tmp/tunnel-token" ;;
+    false|0) ;;
+    *) fail "TUNNEL_ENABLED must be true/false" ;;
+esac
+: > "$tmp/komari.json"
+if [ -n "${KOMARI_ENDPOINT:-}${KOMARI_TOKEN:-}" ]; then
+    [ -x /usr/local/bin/komari-agent ] || fail "Komari requires the full image"
+    : "${KOMARI_ENDPOINT:?KOMARI_ENDPOINT is required}" "${KOMARI_TOKEN:?KOMARI_TOKEN is required}"
+    jq '.endpoint=env.KOMARI_ENDPOINT | .token=env.KOMARI_TOKEN | .disable_auto_update=true' \
+        /etc/paray/komari.json > "$tmp/komari.json"
+fi
+for name in config.json tunnel-token komari.json; do
+    chmod 640 "$tmp/$name"
+    chown 0:10001 "$tmp/$name"
+    mv -f "$tmp/$name" "/run/paray/$name"
+done

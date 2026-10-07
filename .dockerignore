@@ -1,5 +1,8 @@
 *
-
-!apps.ini
+!Dockerfile
+!LICENSE
+!versions.lock.json
+!fetch.sh
 !config.json
-!entrypoint.sh
+!rootfs/
+!rootfs/**

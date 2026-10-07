@@ -1,125 +1,48 @@
 {
-    "log": {"loglevel": "none"},
-    "dns": {"servers": ["https+local://1.1.1.1/dns-query", "https+local://8.8.8.8/dns-query"]},
-    "routing": {
-        "domainStrategy": "IPIfNonMatch",
-        "rules": [
-            {"type": "field", "ip":       ["geoip:cn", "geoip:private"], "outboundTag": "block"},
-            {"type": "field", "domain":   ["geosite:cn"], "outboundTag": "block"},
-            {"type": "field", "domain":   ["geosite:openai", "geosite:netflix", "geosite:disney"], "outboundTag": "WARP"},
-            {"type": "field", "protocol": ["bittorrent"], "outboundTag": "block"}
-        ]
-    },
-    "inbounds": [
-        {
-            "listen": "0.0.0.0",
-            "port": 8080,
-            "protocol": "vless",
-            "settings": {
-                "clients": [{"id": "--uuid--", "flow": ""}],
-                "decryption": "--decryption--"
-            },
-            "streamSettings": {
-                "network": "xhttp",
-                "security": "none",
-                "xhttpSettings": {"path": "/fetch-xhttp"}
-            },
-            "sniffing": {
-                "enabled": true,
-                "destOverride": ["http", "tls", "quic"],
-                "metadataOnly": false
-            }
+  "log": {"loglevel": "none"},
+  "dns": {"servers": ["https+local://1.1.1.1/dns-query", "https+local://8.8.8.8/dns-query"]},
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {"type": "field", "ip": ["geoip:cn", "geoip:private"], "outboundTag": "block"},
+      {"type": "field", "protocol": ["bittorrent"], "outboundTag": "block"}
+    ]
+  },
+  "outbounds": [
+    {"protocol": "freedom", "tag": "direct"},
+    {"protocol": "blackhole", "tag": "block"}
+  ],
+  "policy": {
+    "levels": {"0": {"handshake": 2, "connIdle": 120}}
+  },
+  "inbounds": [
+    {
+      "port": 8488,
+      "protocol": "vless",
+      "settings": {
+        "clients": [{"id": "__uuid__", "flow": ""}],
+        "decryption": "__decryption__"
+      },
+      "streamSettings": {
+        "method": "xhttp",
+        "security": "none",
+        "xhttpSettings": {
+          "path": "/api/v1/chat/completions/",
+          "mode": "auto",
+          "xPaddingObfsMode": true,
+          "xPaddingMethod": "tokenish",
+          "xPaddingPlacement": "header",
+          "xPaddingHeader": "X-Correlation-Id",
+          "xPaddingKey": "_cid",
+          "xPaddingBytes": "32-128"
         },
-        {
-            "port": 8081,
-            "protocol": "vless",
-            "settings": {
-                "clients": [
-                    {"id": "--uuid--", "flow": ""}
-                ],
-                "decryption": "--decryption--"
-            },
-            "streamSettings": {
-                "network": "ws",
-                "security": "none",
-                "wsSettings": {"path": "/fetch-ws"}
-            },
-            "sniffing":{
-                "enabled": true,
-                "destOverride": ["http", "tls", "quic"],
-                "metadataOnly": false
-            }
-        },
-        {
-            "port": 8082,
-            "protocol": "vless",
-            "settings": {
-                "clients": [
-                    {"id": "--uuid--", "flow": ""}
-                ],
-                "decryption": "--decryption--"
-            },
-            "streamSettings": {
-                "network": "grpc",
-                "security": "tls",
-                "tlsSettings": {
-                    "certificates": [
-                        {
-                            "certificate": [
-                                "-----BEGIN CERTIFICATE-----",
-                                "MIIBRjCB+aADAgECAhRbk2AJO3YvI9EzNcasnDbbj8/0FDAFBgMrZXAwGTEXMBUG",
-                                "A1UEAwwOZ3JwYy52bGVzcy5jb20wHhcNMjYwMjI4MDc1NzE4WhcNMzYwMjI2MDc1",
-                                "NzE4WjAZMRcwFQYDVQQDDA5ncnBjLnZsZXNzLmNvbTAqMAUGAytlcAMhAL2X7Xlh",
-                                "MIWKz4jy8p/vphJzyJ/MeBG9D2gx503L6qkho1MwUTAdBgNVHQ4EFgQUrHyeqkgH",
-                                "iq8W4gBISs1epHAa2k4wHwYDVR0jBBgwFoAUrHyeqkgHiq8W4gBISs1epHAa2k4w",
-                                "DwYDVR0TAQH/BAUwAwEB/zAFBgMrZXADQQB/hUetVFh1n6wtw+BRQ3s+lpB6x8rS",
-                                "ynEcBi+/fLxULtc09Pakg3ai0bR2CyPSkXnrf7o8BqbBAbOFiexRUn4G",
-                                "-----END CERTIFICATE-----"
-                            ],
-                            "key": [
-                                "-----BEGIN PRIVATE KEY-----",
-                                "MC4CAQAwBQYDK2VwBCIEICBQPzW/CROn8j7KrPUJU5r2/5GBSY7BhSbfMnG2tF30",
-                                "-----END PRIVATE KEY-----"
-                            ]
-                        }
-                    ],
-                    "alpn": ["h2"]
-                },
-                "grpcSettings": {
-                    "serviceName": "fetch-grpc",
-                    "multiMode": true,
-                    "idle_timeout": 60,
-                    "health_check_timeout": 20,
-                    "permit_without_stream": true
-                }
-            },
-            "sniffing":{
-                "enabled": true,
-                "destOverride": ["http", "tls", "quic"],
-                "metadataOnly": false
-            }
-        }
-    ],
-    "outbounds": [
-        {"protocol": "freedom",   "tag": "direct"},
-        {"protocol": "blackhole", "tag": "block"},
-        {
-            "tag": "WARP",
-            "protocol": "wireguard",
-            "settings": {
-                "secretKey": "AFXoXc+3MANDKBkFwYOJwytC+LoFnVu+SBBjg/WL4Ww=",
-                "address": ["172.16.0.2/32", "2606:4700:110:8b0b:bc62:d926:f727:2643/128"],
-                "peers": [{
-                    "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
-                    "allowedIPs": ["0.0.0.0/0", "::/0"],
-                    "endpoint": "engage.cloudflareclient.com:2408"
-                }],
-                "reserved": [78, 135, 76],
-                "mtu": 1280
-            }
-        }
-    ],
-    "policy": {
-        "levels": {"0": {"handshake": 2, "connIdle": 120}}
+        "sockopt": {"acceptProxyProtocol": false}
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": ["http", "tls", "quic"],
+        "metadataOnly": false
+      }
     }
+  ]
 }

@@ -4,71 +4,71 @@
 
 ![License](https://img.shields.io/badge/license-MIT-green) [![Build And Push](https://github.com/dismay712/paray/actions/workflows/build-and-push.yml/badge.svg?branch=main&event=workflow_dispatch)](https://github.com/dismay712/paray/actions/workflows/build-and-push.yml) [![Docker Pulls](https://img.shields.io/docker/pulls/znxr/paray)](https://hub.docker.com/r/znxr/paray)
 
+### 构建
+
+~~~sh
+docker buildx build --target full --load -t paray:full .
+docker buildx build --target lite --load -t paray:lite .
+~~~
+
+| 镜像 | 内容 |
+| --- | --- |
+| full / latest | Xray、cloudflared、Komari |
+| lite | Xray、cloudflared |
+
+支持 linux/amd64、linux/arm64。
+
+精简 geoip.dat 单独获取，仅含 CN、PRIVATE，保留 IPv4/IPv6。
+
 ### 环境变量
 
 | 环境变量     | 说明                                                         |
 | ------------ | ------------------------------------------------------------ |
 | WEBJS_UUID   | `vless` 的 `UUID` 参数                                       |
-| WEBJS_DECR   | `vless` 的 `decryption` 参数，不需要可填 `none`，不能留空    |
-| KOMARI_ARGS  | `Komari Agent` 的运行参数，可以从 `Komari` 后台管理的安装命令获取 |
-| TUNNEL_TOKEN | `Cloudflare Tunnel` 的 `Token` 参数                          |
+| WEBJS_DECR   | `vless` 的 `decryption` 参数，未设置或为空时使用 `none`   |
+| TUNNEL_TOKEN | 可选，设置后启动 cloudflared |
+| TUNNEL_ENABLED | 默认 true；false 可显式停用 Tunnel |
+| KOMARI_ENDPOINT | 可选，Komari 面板地址 |
+| KOMARI_TOKEN | 启用 Komari 时与 endpoint 一起提供 |
 
-### 保活
+lite 镜像如果配置了 Komari 凭据会在初始化时报错。
 
-#### 分流
-
-![pZzR538.png](https://s41.ax1x.com/2026/02/27/pZzR538.png)
-
-#### gRPC 分流设置
-
-![pZzRIgS.png](https://s41.ax1x.com/2026/02/27/pZzRIgS.png)
-
-### 保活
-
-可以将 `3000` (xhttp) 端口暴露出来，直接使用定时工具定时访问 `/fetch-xhttp` 即可。
-
-因为不带上正确的参数，虽然请求到达了 `xray`，但会直接丢弃，损失一丢丢性能。
+full 镜像未提供 Token 时 Tunnel 保持停用；未提供 Komari 两项凭据时 Agent 保持停用。
 
 ### 配置
 
-#### XHTTP
-
-```url
-vless://{UUID}@icook.hk:443?mode=auto&path=fetch-xhttp&security=tls&encryption={没有就写none}&type=xhttp&sni={Cloudflare Tunnel 域名}#Paray-XHTTP
-```
+#### Xray
 
 ```json
 {
-  "outbound": [
+  "outbounds": [
     {
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
-        "vnext": [
-          {
-            "address": "icook.hk",
-            "port": 443,
-            "users": [
-              {
-                "encryption": "{没有就写none}",
-                "flow": "",
-                "id": "{UUID}",
-                "level": 0
-              }
-            ]
-          }
-        ]
+        "address": "icook.hk",
+        "port": 443,
+        "id": "11111111-1111-4444-5555-111144444444",
+        "encryption": "{没有就填 none}",
+        "flow": ""
       },
       "streamSettings": {
-        "network": "xhttp",
+        "method": "xhttp",
         "security": "tls",
         "tlsSettings": {
-          "allowInsecure": false,
-          "serverName": "{Cloudflare Tunnel 域名}"
+          "serverName": "{Cloudflare Tunnel 域名或 PaaS 平台直连域名}",
+          "alpn": ["h2"]
         },
         "xhttpSettings": {
-          "host": "",
-          "mode": "auto",
-          "path": "fetch-xhttp"
+          "host": "{Cloudflare Tunnel 域名或 PaaS 平台直连域名}",
+          "path": "/api/v1/chat/completions/",
+          "mode": "packet-up",
+          "xPaddingObfsMode": true,
+          "xPaddingMethod": "tokenish",
+          "xPaddingPlacement": "header",
+          "xPaddingHeader": "X-Correlation-Id",
+          "xPaddingKey": "_cid",
+          "xPaddingBytes": "32-128"
         }
       }
     }
@@ -76,36 +76,54 @@ vless://{UUID}@icook.hk:443?mode=auto&path=fetch-xhttp&security=tls&encryption={
 }
 ```
 
-#### Clash
+#### Mihomo
 
 ```yaml
-# ws
-- name: Paray-WS
+- name: PaaS 直连
+  type: vless
+  server: paas.example.com # PaaS 平台直连域名
+  port: 443
+  uuid: 11111111-1111-4444-5555-111144444444
+  encryption: "" # 没有就填 none
+  udp: true
+  packet-encoding: xudp
+  tls: true
+  servername: paas.example.com # PaaS 平台直连域名
+  skip-cert-verify: false
+  alpn: ["http/1.1"]
+  network: xhttp
+  xhttp-opts:
+    host: paas.example.com # PaaS 平台直连域名
+    path: /api/v1/chat/completions/
+    mode: packet-up
+    x-padding-obfs-mode: true
+    x-padding-method: tokenish
+    x-padding-placement: header
+    x-padding-header: X-Correlation-Id
+    x-padding-key: _cid
+    x-padding-bytes: "32-128"
+
+- name: Cloudflare-Tunnel
   type: vless
   server: icook.hk # 可换用其他 Cloudflare 加速域名
   port: 443
-  uuid: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee # UUID
-  tls: true
+  uuid: 11111111-1111-4444-5555-111144444444
+  encryption: ""
   udp: true
-  servername: aaa.bbb.ccc # Cloudflare Tunnel 域名
-  skip-cert-verify: false
-  network: ws
-  ws-opts:
-    path: /fetch-ws?ed=2560
-    headers:
-      Host: aaa.bbb.ccc # Cloudflare Tunnel 域名
-# gRPC
-- name: Paray-gRPC
-  type: vless
-  server: icook.hk # 可换用其他 Cloudflare 加速域名
-  port: 443
-  uuid: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee # UUID
+  packet-encoding: xudp
   tls: true
-  udp: true
-  servername: aaa.bbb.ccc # Cloudflare Tunnel 域名
+  servername: tunnel.example.com # Cloudflare Tunnel 域名
   skip-cert-verify: false
-  alpn: ['h2']
-  network: grpc
-  grpc-opts:
-    grpc-service-name: fetch-grpc
+  alpn: [h2]
+  network: xhttp
+  xhttp-opts:
+    host: tunnel.example.com # Cloudflare Tunnel 域名
+    path: /api/v1/chat/completions/
+    mode: packet-up
+    x-padding-obfs-mode: true
+    x-padding-method: tokenish
+    x-padding-placement: header
+    x-padding-header: X-Correlation-Id
+    x-padding-key: _cid
+    x-padding-bytes: "32-128"
 ```

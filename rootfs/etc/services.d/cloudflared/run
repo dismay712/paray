@@ -1,0 +1,11 @@
+#!/command/execlineb -P
+fdmove -c 2 1
+ifelse { /bin/test -s /run/paray/tunnel-token }
+{
+  s6-setuidgid paray
+  /usr/bin/env -i PATH=/usr/local/bin:/usr/bin:/bin HOME=/run/paray/home
+  /usr/local/bin/cloudflared --no-autoupdate tunnel
+  --edge-ip-version auto --protocol http2 --metrics 127.0.0.1:20000
+  run --token-file /run/paray/tunnel-token
+}
+s6-pause

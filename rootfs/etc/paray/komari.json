@@ -1,0 +1,5 @@
+{
+  "endpoint": "__komari_endpoint__",
+  "token": "__komari_token__",
+  "disable_auto_update": true
+}
