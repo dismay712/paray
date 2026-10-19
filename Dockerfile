@@ -2,7 +2,7 @@ ARG ALPINE_IMAGE=alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c8
 
 FROM --platform=$BUILDPLATFORM ${ALPINE_IMAGE} AS downloads
 RUN apk add --no-cache \
-    curl=8.14.1-r3 \
+    curl=8.14.1-r4 \
     jq=1.8.2-r0 \
     unzip=6.0-r15
 WORKDIR /src
