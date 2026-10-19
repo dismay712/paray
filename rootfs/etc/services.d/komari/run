@@ -3,11 +3,15 @@
 exec 2>&1
 
 if [ -s /run/paray/komari.json ]; then
-    cd /run/paray/home
+    cd /root
 
     exec env -i \
         PATH=/usr/local/bin:/usr/bin:/bin \
-        HOME=/run/paray/home \
+        HOME=/root \
+        USER=root \
+        LOGNAME=root \
+        SHELL=/bin/sh \
+        TERM=xterm-256color \
         /usr/local/bin/komari-agent \
         --config /run/paray/komari.json
 fi
