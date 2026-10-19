@@ -2,9 +2,9 @@ ARG ALPINE_IMAGE=alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c8
 
 FROM --platform=$BUILDPLATFORM ${ALPINE_IMAGE} AS downloads
 RUN apk add --no-cache \
-    curl=8.14.1-r4 \
-    jq=1.8.2-r0 \
-    unzip=6.0-r15
+    curl \
+    jq \
+    unzip
 WORKDIR /src
 COPY versions.lock.json fetch.sh ./
 
@@ -26,10 +26,10 @@ RUN sh fetch.sh komari "$TARGETARCH" /out/komari-agent \
 
 FROM ${ALPINE_IMAGE} AS runtime
 RUN apk add --no-cache \
-        ca-certificates-bundle=20260909-r0 \
-        jq=1.8.2-r0 \
-        oniguruma=6.9.10-r0 \
-        s6=2.13.2.0-r0 \
+        ca-certificates-bundle \
+        jq \
+        oniguruma \
+        s6 \
     && addgroup -g 10001 paray \
     && adduser -D -H -u 10001 -G paray \
         -h /run/paray/home \
