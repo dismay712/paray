@@ -2,36 +2,36 @@
   "schema": 1,
   "alpine": "alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a",
   "versions": {
-    "xray": "v26.10.21",
-    "cloudflared": "2026.10.5",
+    "xray": "v26.10.31",
+    "cloudflared": "2026.10.7",
     "komari": "1.5.11",
-    "geoip_commit": "7ae41d7f3d4e7acc37acd1b02e554b7bb85f3a8d"
+    "geoip_commit": "33824131927ddbc19c540f2a301cc4ef4e123478"
   },
   "assets": {
     "xray": {
       "amd64": {
-        "url": "https://github.com/XTLS/Xray-core/releases/download/v26.10.21/Xray-linux-64.zip",
-        "sha256": "0eec3ed4163c273d8c8bf821f7d219e257921cf584aa3fb970715e458e631978"
+        "url": "https://github.com/XTLS/Xray-core/releases/download/v26.10.31/Xray-linux-64.zip",
+        "sha256": "e4bd9119f50ae7c41658b1abd0679ae06f98bd864a2907ff33f2f2cf7081b214"
       },
       "arm64": {
-        "url": "https://github.com/XTLS/Xray-core/releases/download/v26.10.21/Xray-linux-arm64-v8a.zip",
-        "sha256": "d1304946c486d98e6b886e9b931eaaaebb23835b30e217638037b7f2721d4e9c"
+        "url": "https://github.com/XTLS/Xray-core/releases/download/v26.10.31/Xray-linux-arm64-v8a.zip",
+        "sha256": "1811c8f1da0c3b6dc707ebaf1c8390e987ba39859a8f0a7aadd8526157f2ec8d"
       }
     },
     "geoip": {
       "any": {
-        "url": "https://raw.githubusercontent.com/Loyalsoldier/geoip/7ae41d7f3d4e7acc37acd1b02e554b7bb85f3a8d/geoip-only-cn-private.dat",
-        "sha256": "86ddab90d8959c7c93ca0f8eceaec716a042ac025f604621afcd4e8186d8eaea"
+        "url": "https://raw.githubusercontent.com/Loyalsoldier/geoip/33824131927ddbc19c540f2a301cc4ef4e123478/geoip-only-cn-private.dat",
+        "sha256": "99479110e876624833a224e4adfd0da15751b006b784faf8dac6176e29fef74b"
       }
     },
     "cloudflared": {
       "amd64": {
-        "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.10.5/cloudflared-linux-amd64",
-        "sha256": "e1bc0cf084fd9e590554fe769a86b1db46701c3f847a43d902f7b974a4e16298"
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.10.7/cloudflared-linux-amd64",
+        "sha256": "1f99fb518b83dec2ba8d870a7cc991d82a77e6196295a3d2754ba17ab9f91872"
       },
       "arm64": {
-        "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.10.5/cloudflared-linux-arm64",
-        "sha256": "72e0d05a67e09da87cf495e409a28c3cc5994dd23fc66a982eebea6a55923b7d"
+        "url": "https://github.com/cloudflare/cloudflared/releases/download/2026.10.7/cloudflared-linux-arm64",
+        "sha256": "3df43aedc9ff291d1735b5cb576cb97e0b157488796db2e32b28aecabb445775"
       }
     },
     "komari": {
