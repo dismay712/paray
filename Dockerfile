@@ -64,4 +64,4 @@ LABEL org.opencontainers.image.title="paray lite"
 
 FROM runtime AS full
 COPY --from=agent /out/komari-agent /usr/local/bin/komari-agent
-LABEL org.opencontainers.image.title="paray full"
+LABEL org.opencontainers.image.title="paray full (Komari Zig)"

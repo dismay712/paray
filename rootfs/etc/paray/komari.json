@@ -4,7 +4,7 @@
   "disable_auto_update": true,
   "interval": 5,
   "include_nics": "eth0",
-  "max-retries": 5,
-  "reconnect-interval": 10,
-  "info-report-interval": 15
+  "max_retries": 5,
+  "reconnect_interval": 10,
+  "info_report_interval": 15
 }
