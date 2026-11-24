@@ -31,10 +31,15 @@ def test_image(image, directory, origin_port):
     user_id = str(uuid.uuid4())
     server = json.loads(Path("config.json").read_text())
     server["inbounds"][0]["listen"] = "127.0.0.1"
-    # Production blocks private destinations. Allow only the local echo fixture.
+    # Both the router and Freedom block private destinations for VLESS.
+    # Allow only the echo service in the temporary test configuration.
+    echo_target = {"network": "tcp", "ip": ["127.0.0.1/32"], "port": str(origin_port)}
     server["routing"]["rules"].insert(0, {
-        "type": "field", "ip": ["127.0.0.1/32"], "port": str(origin_port),
-        "outboundTag": "direct",
+        "type": "field", **echo_target, "outboundTag": "direct",
+    })
+    direct = next(out for out in server["outbounds"] if out["tag"] == "direct")
+    direct.setdefault("settings", {}).setdefault("finalRules", []).insert(0, {
+        "action": "allow", **echo_target,
     })
     server_file = directory / "server.json"
     server_file.write_text(json.dumps(server))
@@ -79,7 +84,7 @@ def test_image(image, directory, origin_port):
         upload.write_bytes(payload)
         response = subprocess.check_output([
             "curl", "--silent", "--show-error", "--fail", "--max-time", "30",
-            "--retry", "5", "--retry-delay", "1", "--retry-connrefused",
+            "--retry", "5", "--retry-delay", "1", "--retry-connrefused", "--retry-max-time", "10",
             "--noproxy", "", "--proxy", f"socks5h://127.0.0.1:{socks_port}",
             "--header", "Expect:", "--data-binary", f"@{upload}",
             f"http://127.0.0.1:{origin_port}/echo",
