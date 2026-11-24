@@ -8,5 +8,11 @@ rm -rf /run/service
 mkdir -p /run/service
 
 cp -a /etc/services.d/. /run/service/
+if [ ! -s /run/paray/tunnel-token ]; then
+    : > /run/service/cloudflared/down
+fi
+if [ ! -s /run/paray/komari.json ]; then
+    : > /run/service/komari/down
+fi
 
 exec s6-svscan /run/service
