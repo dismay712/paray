@@ -17,6 +17,10 @@ done
 WEBJS_DECR=${WEBJS_DECR:-none}
 export WEBJS_DECR
 [ -z "${KOMARI_ARGS:-}${KOMARI_ARGS_JSON:-}" ] || fail "use KOMARI_ENDPOINT and KOMARI_TOKEN; edit the Komari JSON template for other options"
+case "${TUNNEL_TRANSPORT_PROTOCOL:-}" in
+    ''|auto|http2|quic) ;;
+    *) fail "TUNNEL_TRANSPORT_PROTOCOL must be auto, http2 or quic" ;;
+esac
 
 mkdir -p /run/paray/home
 chmod 750 /run/paray

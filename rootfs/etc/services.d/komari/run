@@ -2,18 +2,14 @@
 
 exec 2>&1
 
-if [ -s /run/paray/komari.json ]; then
-    cd /root
+cd /root
 
-    exec env -i \
-        PATH=/usr/local/bin:/usr/bin:/bin \
-        HOME=/root \
-        USER=root \
-        LOGNAME=root \
-        SHELL=/bin/sh \
-        TERM=xterm-256color \
-        /usr/local/bin/komari-agent \
-        --config /run/paray/komari.json
-fi
-
-exec s6-pause
+exec env -i \
+    PATH=/usr/local/bin:/usr/bin:/bin \
+    HOME=/root \
+    USER=root \
+    LOGNAME=root \
+    SHELL=/bin/sh \
+    TERM=xterm-256color \
+    /usr/local/bin/komari-agent \
+    --config /run/paray/komari.json
